@@ -117,7 +117,7 @@ const hostPage4 = async (req, res) => {
     const docs = await Dog.find({}).lean().exec();
 
     // Once we get back the docs array, we can send it to page1.
-    return res.render('page1', { dogs: docs });
+    return res.render('page4', { dogs: docs });
   } catch (err) {
     /* If our database returns an error, or is unresponsive, we will print that error to
        our console for us to see. We will also send back an error message to the client.
@@ -322,13 +322,13 @@ const searchDogName = async (req, res) => {
        if we are updating an existing entry (if the _id is already in the database).
   
        Since lastAdded is likely already in the database, .save() will update it rather
-       than make a new cat.
+       than make a new dog.
   
        We can use async/await for this, or just use standard promise .then().catch() syntax.
     */
     const savePromise = doc.save();
   
-    // If we successfully save/update them in the database, send back the cat's info.
+    // If we successfully save/update them in the database, send back the dog's info.
     savePromise.then(() => res.json({
       name: doc.name,
       breed: doc.breed,
@@ -340,9 +340,6 @@ const searchDogName = async (req, res) => {
       console.log(err);
       return res.status(500).json({ error: 'Something went wrong' });
     });
-
-  // Otherwise, we got a result and will send it back to the user.
-  return res.json({ name: doc.name, breed: doc.breed, age: doc.age });
 };
 
 // Function to handle searching a cat by name.
