@@ -310,36 +310,36 @@ const searchDogName = async (req, res) => {
     return res.json({ error: 'No dogs found' });
   }
 
-    // First we will update the number of bedsOwned.
-    doc.age++;
+  // First we will update the number of bedsOwned.
+  doc.age++;
 
-    /* Remember that lastAdded is a Mongoose document (made on line 14 if no new
+  /* Remember that lastAdded is a Mongoose document (made on line 14 if no new
        ones were made after the server started, or line 116 if there was). Mongo
        documents have an _id, which is a globally unique identifier that distinguishes
        them from other documents. Our mongoose document also has this _id. When we
        call .save() on a document, Mongoose and Mongo will use the _id to determine if
        we are creating a new database entry (if the _id doesn't already exist), or
        if we are updating an existing entry (if the _id is already in the database).
-  
+
        Since lastAdded is likely already in the database, .save() will update it rather
        than make a new dog.
-  
+
        We can use async/await for this, or just use standard promise .then().catch() syntax.
     */
-    const savePromise = doc.save();
-  
-    // If we successfully save/update them in the database, send back the dog's info.
-    savePromise.then(() => res.json({
-      name: doc.name,
-      breed: doc.breed,
-      age: doc.age,
-    }));
-  
-    // If something goes wrong saving to the database, log the error and send a message to the client.
-    savePromise.catch((err) => {
-      console.log(err);
-      return res.status(500).json({ error: 'Something went wrong' });
-    });
+  const savePromise = doc.save();
+
+  // If we successfully save/update them in the database, send back the dog's info.
+  savePromise.then(() => res.json({
+    name: doc.name,
+    breed: doc.breed,
+    age: doc.age,
+  }));
+
+  // If something goes wrong saving to the database, log the error and send a message to the client.
+  savePromise.catch((err) => {
+    console.log(err);
+    return res.status(500).json({ error: 'Something went wrong' });
+  });
 };
 
 // Function to handle searching a cat by name.
@@ -417,75 +417,6 @@ const updateLast = (req, res) => {
   savePromise.then(() => res.json({
     name: lastAdded.name,
     beds: lastAdded.bedsOwned,
-  }));
-
-  // If something goes wrong saving to the database, log the error and send a message to the client.
-  savePromise.catch((err) => {
-    console.log(err);
-    return res.status(500).json({ error: 'Something went wrong' });
-  });
-};
-
-const updateDog = async (req, res) => {
-  if (!req.body.name) {
-    // If they are missing data, send back an error.
-    return res.status(400).json({ error: 'dog name is required' });
-  }
-  
-/* If they do give us a name to search, we will as the database for a cat with that name.
-     Remember that since we are interacting with the database, we want to wrap our code in a
-     try/catch in case the database throws an error or doesn't respond.
-  */
-     let doc;
-     try {
-       /* Just like Cat.find() in hostPage1() above, Mongoose models also have a .findOne()
-          that will find a single document in the database that matches the search parameters.
-          This function is faster, as it will stop searching after it finds one document that
-          matches the parameters. The downside is you cannot get multiple responses with it.
-   
-          One of three things will occur when trying to findOne in the database.
-           1) An error will be thrown, which will stop execution of the try block and move to
-               the catch block.
-           2) Everything works, but the name was not found in the database returning an empty
-               doc object.
-           3) Everything works, and an object matching the search is found.
-       */
-       doc = await Dog.findOne({ name: req.query.name }).exec();
-     } catch (err) {
-       // If there is an error, log it and send the user an error message.
-       console.log(err);
-       return res.status(500).json({ error: 'Something went wrong' });
-     }
-   
-     // If we do not find something that matches our search, doc will be empty.
-     if (!doc) {
-       return res.json({ error: 'No dogs found' });
-     }
-   
-
-  // First we will update the number of bedsOwned.
-  doc.age++;
-
-  /* Remember that lastAdded is a Mongoose document (made on line 14 if no new
-     ones were made after the server started, or line 116 if there was). Mongo
-     documents have an _id, which is a globally unique identifier that distinguishes
-     them from other documents. Our mongoose document also has this _id. When we
-     call .save() on a document, Mongoose and Mongo will use the _id to determine if
-     we are creating a new database entry (if the _id doesn't already exist), or
-     if we are updating an existing entry (if the _id is already in the database).
-
-     Since lastAdded is likely already in the database, .save() will update it rather
-     than make a new cat.
-
-     We can use async/await for this, or just use standard promise .then().catch() syntax.
-  */
-  const savePromise = doc.save();
-
-  // If we successfully save/update them in the database, send back the cat's info.
-  savePromise.then(() => res.json({
-    name: doc.name,
-    breed: doc.breed,
-    age: doc.age,
   }));
 
   // If something goes wrong saving to the database, log the error and send a message to the client.
